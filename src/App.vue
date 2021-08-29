@@ -5,6 +5,8 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+
 import HelloWorld from "./components/HelloWorld.vue";
 
 export default defineComponent({
