@@ -1,11 +1,10 @@
 "use strict";
 
-import { app, protocol, BrowserWindow } from "electron";
+import { app, protocol, BrowserWindow, ipcMain } from "electron";
 import { createProtocol } from "vue-cli-plugin-electron-builder/lib";
 import installExtension, { VUEJS3_DEVTOOLS } from "electron-devtools-installer";
-const pty = require("node-pty");
+import NodePty from "@/utils/pty";
 const isDevelopment = process.env.NODE_ENV !== "production";
-console.log(pty);
 // Scheme must be registered before the app is ready
 protocol.registerSchemesAsPrivileged([
   { scheme: "app", privileges: { secure: true, standard: true } },
@@ -34,6 +33,16 @@ async function createWindow() {
     // Load the index.html when not in development
     win.loadURL("app://./index.html");
   }
+  const pty = new NodePty();
+
+  pty.onData((data: any) => {
+    win.webContents.send("terminalBackData", data);
+  });
+
+  ipcMain.addListener("terminalData", (event: any, data: any) => {
+    // console.log(data);
+    pty.write(data);
+  });
 }
 
 // Quit when all windows are closed.
